@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Code — Raphael Zippin</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e14;
+    --bg2: #0f1520;
+    --bg3: #141c2e;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #39ff14;
+    --text: #e8edf5;
+    --muted: #6b7a94;
+    --border: rgba(0,212,255,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  /* CARD */
+  .card {
+    width: 100%;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+  }
+
+  /* HEADER */
+  .card-header {
+    padding: 32px 32px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .avatar {
+    width: 64px;
+    height: 64px;
+    background: var(--bg3);
+    border: 2px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: 'Syne', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--accent);
+  }
+
+  .header-info { flex: 1; }
+
+  .header-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .header-role {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    line-height: 1.4;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 14px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+
+  .tab-btn:hover { color: var(--text); }
+
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  /* QR SECTION */
+  .qr-section {
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .qr-wrap {
+    background: #fff;
+    padding: 16px;
+    display: inline-block;
+    position: relative;
+  }
+
+  .qr-label {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .qr-label span {
+    color: var(--accent);
+  }
+
+  /* CONTACTS LIST */
+  .contacts-list {
+    padding: 12px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .contact-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1px solid transparent;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+
+  .contact-row:hover {
+    border-color: var(--border);
+    background: var(--bg3);
+  }
+
+  .contact-icon {
+    width: 32px;
+    height: 32px;
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    color: var(--accent);
+  }
+
+  .contact-label {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    display: block;
+  }
+
+  .contact-value {
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  /* FOOTER */
+  .card-footer {
+    padding: 16px 32px 24px;
+    display: flex;
+    gap: 12px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: none;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+  }
+  .btn-primary:hover { background: #00b8e0; }
+
+  .btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  .hidden { display: none; }
+
+  @media print {
+    body { background: #fff; }
+    .tabs, .card-footer { display: none; }
+    .card { border: 1px solid #ccc; }
+    .card::before { display: none; }
+    .qr-section { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <div class="card">
+    <div class="card-header">
+      <div class="avatar">RZ</div>
+      <div class="header-info">
+        <div class="header-name">RAPHAEL ZIPPIN</div>
+        <div class="header-role">Especialista Linux<br>DevOps · Infra · Cloud</div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('portfolio')">Portfolio</button>
+      <button class="tab-btn" onclick="showTab('whatsapp')">WhatsApp</button>
+      <button class="tab-btn" onclick="showTab('vcard')">vCard</button>
+    </div>
+
+    <div id="tab-portfolio" class="qr-section">
+      <div class="qr-label">Aponte a câmera para abrir o portfólio</div>
+      <div class="qr-wrap">
+        <div id="qr-portfolio"></div>
+      </div>
+      <div class="qr-label">🌐 <span>raphazippin.github.io/site</span></div>
+    </div>
+
+    <div id="tab-whatsapp" class="qr-section hidden">
+      <div class="qr-label">Abrir conversa no WhatsApp</div>
+      <div class="qr-wrap">
+        <div id="qr-whatsapp"></div>
+      </div>
+      <div class="qr-label">📱 <span>+55 (11) 97806-3303</span></div>
+    </div>
+
+    <div id="tab-vcard" class="qr-section hidden">
+      <div class="qr-label">Escaneie para salvar o contato</div>
+      <div class="qr-wrap">
+        <div id="qr-vcard"></div>
+      </div>
+      <div class="qr-label">💾 <span>Salva direto nos contatos</span></div>
+    </div>
+
+    <div class="contacts-list">
+      <a class="contact-row" href="https://raphazippin.github.io/site/" target="_blank">
+        <div class="contact-icon">🌐</div>
+        <div>
+          <span class="contact-label">Portfólio</span>
+          <span class="contact-value">raphazippin.github.io/site</span>
+        </div>
+      </a>
+      <a class="contact-row" href="mailto:raphazippin@gmail.com">
+        <div class="contact-icon">✉</div>
+        <div>
+          <span class="contact-label">Email</span>
+          <span class="contact-value">raphazippin@gmail.com</span>
+        </div>
+      </a>
+      <a class="contact-row" href="https://wa.me/5511978063303" target="_blank">
+        <div class="contact-icon">📱</div>
+        <div>
+          <span class="contact-label">WhatsApp</span>
+          <span class="contact-value">+55 (11) 97806-3303</span>
+        </div>
+      </a>
+      <a class="contact-row" href="https://www.linkedin.com/in/raphazippin" target="_blank">
+        <div class="contact-icon">in</div>
+        <div>
+          <span class="contact-label">LinkedIn</span>
+          <span class="contact-value">linkedin.com/in/raphazippin</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="card-footer">
+      <button class="btn btn-secondary" onclick="window.print()">🖨 Imprimir</button>
+      <a class="btn btn-primary" id="dl-btn" download="contato-raphael-zippin.vcf">⬇ Baixar vCard</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const vcard = `BEGIN:VCARD
+VERSION:3.0
+FN:Raphael Zippin
+N:Zippin;Raphael;;;
+ORG:Raphael Zippin - Especialista Linux
+TITLE:Especialista Linux & DevOps
+TEL;TYPE=CELL:+5511978063303
+EMAIL:raphazippin@gmail.com
+URL:https://raphazippin.github.io/site/
+URL;TYPE=LinkedIn:https://www.linkedin.com/in/raphazippin
+ADR;TYPE=HOME:;;São Paulo;SP;;Brasil
+NOTE:Especialista Linux com 15+ anos de experiência em DevOps, Docker, VMware, AWS e Zabbix.
+END:VCARD`;
+
+const vcardBlob = new Blob([vcard], { type: 'text/vcard' });
+const vcardUrl = URL.createObjectURL(vcardBlob);
+document.getElementById('dl-btn').href = vcardUrl;
+
+const opts = { width: 220, height: 220, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M };
+
+new QRCode(document.getElementById('qr-portfolio'), { ...opts, text: 'https://raphazippin.github.io/site/' });
+new QRCode(document.getElementById('qr-whatsapp'), { ...opts, text: 'https://wa.me/5511978063303' });
+new QRCode(document.getElementById('qr-vcard'), { ...opts, text: vcard });
+
+function showTab(tab) {
+  ['portfolio','whatsapp','vcard'].forEach(t => {
+    document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab);
+  });
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', ['portfolio','whatsapp','vcard'][i] === tab);
+  });
+}
+</script>
+</body>
+</html>
