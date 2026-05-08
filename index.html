@@ -280,12 +280,12 @@
     </div>
 
     <div class="tabs">
-      <button class="tab-btn active" onclick="showTab('portfolio')">Portfolio</button>
-      <button class="tab-btn" onclick="showTab('whatsapp')">WhatsApp</button>
+      <button class="tab-btn" onclick="showTab('portfolio')">Portfolio</button>
+      <button class="tab-btn active" onclick="showTab('whatsapp')">WhatsApp</button>
       <button class="tab-btn" onclick="showTab('vcard')">vCard</button>
     </div>
 
-    <div id="tab-portfolio" class="qr-section">
+    <div id="tab-portfolio" class="qr-section hidden">
       <div class="qr-label">Aponte a câmera para abrir o portfólio</div>
       <div class="qr-wrap">
         <div id="qr-portfolio"></div>
@@ -293,7 +293,7 @@
       <div class="qr-label">🌐 <span>raphazippin.github.io/site</span></div>
     </div>
 
-    <div id="tab-whatsapp" class="qr-section hidden">
+    <div id="tab-whatsapp" class="qr-section">
       <div class="qr-label">Abrir conversa no WhatsApp</div>
       <div class="qr-wrap">
         <div id="qr-whatsapp"></div>
@@ -348,19 +348,7 @@
 </div>
 
 <script>
-const vcard = `BEGIN:VCARD
-VERSION:3.0
-FN:Raphael Zippin
-N:Zippin;Raphael;;;
-ORG:Raphael Zippin - Especialista Linux
-TITLE:Especialista Linux & DevOps
-TEL;TYPE=CELL:+5511978063303
-EMAIL:raphazippin@gmail.com
-URL:https://raphazippin.github.io/site/
-URL;TYPE=LinkedIn:https://www.linkedin.com/in/raphazippin
-ADR;TYPE=HOME:;;São Paulo;SP;;Brasil
-NOTE:Especialista Linux com 15+ anos de experiência em DevOps, Docker, VMware, AWS e Zabbix.
-END:VCARD`;
+const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:Raphael Zippin\nTEL;TYPE=CELL:+5511978063303\nEMAIL:raphazippin@gmail.com\nURL:https://raphazippin.github.io/site/\nEND:VCARD`;
 
 const vcardBlob = new Blob([vcard], { type: 'text/vcard' });
 const vcardUrl = URL.createObjectURL(vcardBlob);
@@ -370,7 +358,7 @@ const opts = { width: 220, height: 220, colorDark: '#000000', colorLight: '#ffff
 
 new QRCode(document.getElementById('qr-portfolio'), { ...opts, text: 'https://raphazippin.github.io/site/' });
 new QRCode(document.getElementById('qr-whatsapp'), { ...opts, text: 'https://wa.me/5511978063303' });
-new QRCode(document.getElementById('qr-vcard'), { ...opts, text: vcard });
+new QRCode(document.getElementById('qr-vcard'), { ...opts, width: 240, height: 240, correctLevel: QRCode.CorrectLevel.L, text: vcard });
 
 function showTab(tab) {
   ['portfolio','whatsapp','vcard'].forEach(t => {
